@@ -1,6 +1,7 @@
 'use client'
 import { useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { AlertTriangle, Info } from 'lucide-react'
 
 export default function Toast({ message, type = 'info', onDismiss }) {
   useEffect(() => {
@@ -27,9 +28,11 @@ export default function Toast({ message, type = 'info', onDismiss }) {
             border: `1px solid ${type === 'error' ? 'rgba(239,68,68,0.3)' : 'rgba(255,255,255,0.2)'}`,
             color: '#fff',
             boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
+            display: 'flex', alignItems: 'center', gap: 8,
           }}
         >
-          {type === 'error' ? '⚠️ ' : 'ℹ️ '}{message}
+          {type === 'error' ? <AlertTriangle size={16} /> : <Info size={16} />}
+          {message}
         </motion.div>
       )}
     </AnimatePresence>

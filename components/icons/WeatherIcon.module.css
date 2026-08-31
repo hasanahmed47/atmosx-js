@@ -1,0 +1,10 @@
+.icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.icon svg {
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.2));
+}

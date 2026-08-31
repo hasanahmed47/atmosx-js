@@ -1,13 +1,14 @@
 'use client'
 import { useState, useRef, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { convertTemp, getWeatherIcon, formatTime } from '@/lib/weather'
+import { Droplet } from 'lucide-react'
+import { convertTemp, getWeatherIconKey, formatTime } from '@/lib/weather'
+import WeatherIcon from '@/components/icons/WeatherIcon'
 
 export default function HourlyForecast({ items, offset, unit, accent }) {
   const [visibleCount, setVisibleCount] = useState(5)
   const scrollRef = useRef(null)
 
-  // Lazy load more on scroll
   useEffect(() => {
     const el = scrollRef.current
     if (!el) return
@@ -65,15 +66,15 @@ export default function HourlyForecast({ items, offset, unit, accent }) {
               <div style={{ fontSize: 12, color: isNow ? accent : 'rgba(255,255,255,0.6)', marginBottom: 12, fontWeight: isNow ? 700 : 500 }}>
                 {isNow ? 'NOW' : formatTime(item.dt, offset)}
               </div>
-              <div style={{ fontSize: 32, marginBottom: 12, filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.2))' }}>
-                {getWeatherIcon(item.weather[0].id, true)}
+              <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}>
+                <WeatherIcon iconKey={getWeatherIconKey(item.weather[0].id, true)} size={32} />
               </div>
               <div style={{ fontFamily: "'Outfit', sans-serif", fontSize: 18, fontWeight: 800, color: '#fff' }}>
                 {convertTemp(item.main.temp, unit)}°
               </div>
               {item.pop > 0.1 && (
-                <div style={{ fontSize: 11, color: '#60a5fa', marginTop: 8, fontWeight: 600 }}>
-                  💧 {Math.round(item.pop * 100)}%
+                <div style={{ fontSize: 11, color: '#60a5fa', marginTop: 8, fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 3 }}>
+                  <Droplet size={11} /> {Math.round(item.pop * 100)}%
                 </div>
               )}
             </motion.div>

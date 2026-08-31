@@ -1,16 +1,28 @@
 'use client'
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import {
+  CloudRain,
+  CloudLightning,
+  Sun,
+  Cloud,
+  CloudSnow,
+  CloudFog,
+  Moon,
+  Volume1,
+  Volume2,
+  VolumeX,
+  Settings2,
+} from 'lucide-react'
 
-// Weather type → sound file mapping
 const SOUND_MAP = {
-  rain:    { file: '/sounds/rain.mp3',    label: 'Rain',    icon: '🌧️', volume: 0.5 },
-  thunder: { file: '/sounds/thunder.mp3', label: 'Thunder', icon: '⛈️', volume: 0.5 },
-  sunny:   { file: '/sounds/sunny.mp3',   label: 'Nature',  icon: '☀️', volume: 0.4 },
-  cloudy:  { file: '/sounds/wind.mp3',    label: 'Wind',    icon: '☁️', volume: 0.35 },
-  snow:    { file: '/sounds/snow.mp3',    label: 'Snow',    icon: '🌨️', volume: 0.4 },
-  fog:     { file: '/sounds/wind.mp3',    label: 'Fog',     icon: '🌫️', volume: 0.25 },
-  night:   { file: '/sounds/wind.mp3',    label: 'Night',   icon: '🌙', volume: 0.2 },
+  rain:    { file: '/sounds/rain.mp3',    label: 'Rain',    icon: CloudRain,      volume: 0.5 },
+  thunder: { file: '/sounds/thunder.mp3', label: 'Thunder', icon: CloudLightning, volume: 0.5 },
+  sunny:   { file: '/sounds/sunny.mp3',   label: 'Nature',  icon: Sun,            volume: 0.4 },
+  cloudy:  { file: '/sounds/wind.mp3',    label: 'Wind',    icon: Cloud,          volume: 0.35 },
+  snow:    { file: '/sounds/snow.mp3',    label: 'Snow',    icon: CloudSnow,      volume: 0.4 },
+  fog:     { file: '/sounds/wind.mp3',    label: 'Fog',     icon: CloudFog,       volume: 0.25 },
+  night:   { file: '/sounds/wind.mp3',    label: 'Night',   icon: Moon,           volume: 0.2 },
 }
 
 export default function WeatherSound({ weatherType }) {
@@ -37,19 +49,17 @@ export default function WeatherSound({ weatherType }) {
     const audio = new Audio(config.file)
     audio.loop = true
     audio.volume = config.volume * volume
-    audio.play().catch(() => {}) // Catch autoplay block silently
+    audio.play().catch(() => {})
     audioRef.current = audio
     currentTypeRef.current = type
   }, [volume, stopAudio])
 
-  // Weather type changed while playing
   useEffect(() => {
     if (playing && weatherType && weatherType !== currentTypeRef.current) {
       startAudio(weatherType)
     }
   }, [weatherType, playing, startAudio])
 
-  // Volume changed
   useEffect(() => {
     if (audioRef.current && currentTypeRef.current) {
       const config = SOUND_MAP[currentTypeRef.current]
@@ -57,7 +67,6 @@ export default function WeatherSound({ weatherType }) {
     }
   }, [volume])
 
-  // Cleanup on unmount
   useEffect(() => {
     return () => stopAudio()
   }, [stopAudio])
@@ -80,7 +89,6 @@ export default function WeatherSound({ weatherType }) {
       zIndex: 50, display: 'flex', flexDirection: 'column',
       alignItems: 'flex-end', gap: 10,
     }}>
-      {/* Volume slider — shows on hover */}
       <AnimatePresence>
         {showVolume && playing && (
           <motion.div
@@ -96,11 +104,11 @@ export default function WeatherSound({ weatherType }) {
               minWidth: 170,
             }}
           >
-            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', textTransform: 'uppercase', letterSpacing: 1 }}>
-              {config?.icon} {config?.label}
+            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', textTransform: 'uppercase', letterSpacing: 1, display: 'flex', alignItems: 'center', gap: 6 }}>
+              {config?.icon && <config.icon size={13} />} {config?.label}
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <span style={{ fontSize: 13 }}>🔈</span>
+              <Volume1 size={13} />
               <input
                 type="range" min="0" max="1" step="0.05"
                 value={volume}
@@ -111,7 +119,7 @@ export default function WeatherSound({ weatherType }) {
                   background: `linear-gradient(90deg, rgba(255,255,255,0.85) ${volume * 100}%, rgba(255,255,255,0.18) ${volume * 100}%)`,
                 }}
               />
-              <span style={{ fontSize: 13 }}>🔊</span>
+              <Volume2 size={13} />
             </div>
           </motion.div>
         )}
@@ -128,16 +136,15 @@ export default function WeatherSound({ weatherType }) {
               background: showVolume ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.08)',
               backdropFilter: 'blur(20px)',
               border: `1px solid rgba(255,255,255,0.15)`,
-              cursor: 'pointer', fontSize: 16,
+              cursor: 'pointer',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               color: '#fff', transition: 'all 0.2s',
             }}
           >
-            ⚙️
+            <Settings2 size={16} />
           </motion.button>
         )}
 
-      {/* Toggle button */}
       <motion.button
         onClick={toggleSound}
         whileHover={{ scale: 1.08 }}
@@ -147,7 +154,7 @@ export default function WeatherSound({ weatherType }) {
           background: playing ? 'rgba(255,255,255,0.18)' : 'rgba(255,255,255,0.08)',
           backdropFilter: 'blur(20px)',
           border: `1px solid ${playing ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.15)'}`,
-          cursor: 'pointer', fontSize: 22,
+          cursor: 'pointer',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           boxShadow: playing ? '0 4px 24px rgba(0,0,0,0.3)' : 'none',
           transition: 'all 0.3s',
@@ -155,7 +162,6 @@ export default function WeatherSound({ weatherType }) {
         }}
         title={playing ? 'Stop sound' : `Play ${config?.label || 'ambient'} sound`}
       >
-        {/* Pulse ring when playing */}
         {playing && (
           <motion.div
             animate={{ scale: [1, 1.6], opacity: [0.4, 0] }}
@@ -167,7 +173,7 @@ export default function WeatherSound({ weatherType }) {
             }}
           />
         )}
-        {playing ? '🔊' : '🔇'}
+        {playing ? <Volume2 size={20} /> : <VolumeX size={20} />}
       </motion.button>
       </div>
     </div>

@@ -1,5 +1,6 @@
 'use client'
 import { motion } from 'framer-motion'
+import { Sunrise, Sunset } from 'lucide-react'
 import { formatTime, getUVLabel } from '@/lib/weather'
 
 export default function SunUV({ data, accent }) {
@@ -10,14 +11,12 @@ export default function SunUV({ data, accent }) {
   const uvPct = Math.min((uvIndex / 11) * 100, 100)
   const uvColor = uvIndex <= 2 ? '#34d399' : uvIndex <= 5 ? '#a3e635' : uvIndex <= 7 ? '#fbbf24' : '#ef4444'
 
-  // Sun position percentage
   const totalDaylight = data.sys.sunset - data.sys.sunrise
   const elapsed = Math.max(0, Math.min(data.dt - data.sys.sunrise, totalDaylight))
   const sunPct = (elapsed / totalDaylight) * 100
 
   return (
     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 16, marginBottom: 16 }}>
-      {/* UV Index */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -37,7 +36,6 @@ export default function SunUV({ data, accent }) {
           {uvLabel}
         </div>
 
-        {/* UV gradient bar */}
         <div style={{ position: 'relative', marginTop: 'auto' }}>
           <div style={{ height: 8, borderRadius: 4, background: 'linear-gradient(90deg, #34d399, #a3e635, #fbbf24, #f97316, #ef4444)' }} />
           <motion.div
@@ -58,7 +56,6 @@ export default function SunUV({ data, accent }) {
         </div>
       </motion.div>
 
-      {/* Sun Schedule */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -68,7 +65,6 @@ export default function SunUV({ data, accent }) {
       >
         <div className="section-label">Sun Schedule</div>
 
-        {/* Sun arc */}
         <div style={{ margin: '8px 0 12px' }}>
           <svg viewBox="0 0 220 70" fill="none" style={{ width: '100%', height: 70 }}>
             <defs>
@@ -77,14 +73,12 @@ export default function SunUV({ data, accent }) {
                 <stop offset="100%" stopColor="#f97316" />
               </linearGradient>
             </defs>
-            {/* Arc path */}
             <path d="M15 60 Q110 8 205 60" stroke="rgba(255,255,255,0.1)" strokeWidth="2" strokeDasharray="5 5" fill="none" />
             {isDay && (
               <path d="M15 60 Q110 8 205 60" stroke="url(#arcGrad)" strokeWidth="2.5"
                 strokeLinecap="round" fill="none"
                 strokeDasharray="220" strokeDashoffset={220 - (sunPct / 100) * 220} />
             )}
-            {/* Sun dot on arc */}
             {isDay && (
               <circle
                 cx={15 + (sunPct / 100) * 190}
@@ -93,21 +87,24 @@ export default function SunUV({ data, accent }) {
                 style={{ filter: 'drop-shadow(0 0 6px #fbbf24)' }}
               />
             )}
-            {/* Horizon line */}
             <line x1="10" y1="63" x2="210" y2="63" stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
           </svg>
         </div>
 
         <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 'auto' }}>
           <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: 26, marginBottom: 8, filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))' }}>🌅</div>
+            <div style={{ marginBottom: 8, display: 'flex', justifyContent: 'center', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))' }}>
+              <Sunrise size={26} color="#fbbf24" strokeWidth={1.75} />
+            </div>
             <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: 1.2, marginBottom: 4, fontWeight: 600 }}>Sunrise</div>
             <div style={{ fontFamily: "'Outfit', sans-serif", fontSize: 20, fontWeight: 800, color: '#fbbf24' }}>
               {formatTime(data.sys.sunrise, offset)}
             </div>
           </div>
           <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: 26, marginBottom: 8, filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))' }}>🌇</div>
+            <div style={{ marginBottom: 8, display: 'flex', justifyContent: 'center', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))' }}>
+              <Sunset size={26} color="#f97316" strokeWidth={1.75} />
+            </div>
             <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: 1.2, marginBottom: 4, fontWeight: 600 }}>Sunset</div>
             <div style={{ fontFamily: "'Outfit', sans-serif", fontSize: 20, fontWeight: 800, color: '#f97316' }}>
               {formatTime(data.sys.sunset, offset)}

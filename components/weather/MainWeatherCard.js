@@ -1,18 +1,21 @@
 'use client'
 import { motion } from 'framer-motion'
-import { convertTemp, getWeatherIcon, getFlagEmoji, getWindDir } from '@/lib/weather'
+import { Droplet, Wind, Gauge, Eye } from 'lucide-react'
+import { convertTemp, getWeatherIconKey, getWindDir } from '@/lib/weather'
+import WeatherIcon from '@/components/icons/WeatherIcon'
+import CountryFlag from '@/components/icons/CountryFlag'
 
 export default function MainWeatherCard({ data, unit, theme }) {
   const isDay = data.dt > data.sys.sunrise && data.dt < data.sys.sunset
-  const icon = getWeatherIcon(data.weather[0].id, isDay)
+  const iconKey = getWeatherIconKey(data.weather[0].id, isDay)
   const sym = `°${unit}`
   const accent = theme?.accent || '#60a5fa'
 
   const stats = [
-    { label: 'Humidity',   value: data.main.humidity,                      unit: '%',    icon: '💧' },
-    { label: 'Wind',       value: Math.round(data.wind.speed * 3.6),        unit: `km/h`, icon: '💨', sub: getWindDir(data.wind.deg || 0) },
-    { label: 'Pressure',   value: data.main.pressure,                       unit: 'hPa',  icon: '📊' },
-    { label: 'Visibility', value: Math.round((data.visibility || 0) / 1000), unit: 'km',   icon: '👁️' },
+    { label: 'Humidity',   value: data.main.humidity,                      unit: '%',    icon: Droplet },
+    { label: 'Wind',       value: Math.round(data.wind.speed * 3.6),        unit: `km/h`, icon: Wind, sub: getWindDir(data.wind.deg || 0) },
+    { label: 'Pressure',   value: data.main.pressure,                       unit: 'hPa',  icon: Gauge },
+    { label: 'Visibility', value: Math.round((data.visibility || 0) / 1000), unit: 'km',   icon: Eye },
   ]
 
   return (
@@ -55,7 +58,7 @@ export default function MainWeatherCard({ data, unit, theme }) {
             {data.name}
           </h1>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 8, color: 'rgba(255,255,255,0.7)', fontSize: 15, fontWeight: 500 }}>
-            {getFlagEmoji(data.sys.country)} {data.sys.country}
+            <CountryFlag code={data.sys.country} size={18} /> {data.sys.country}
             <span style={{ opacity: 0.4 }}>·</span>
             <span style={{ textTransform: 'capitalize' }}>{data.weather[0].description}</span>
           </div>
@@ -82,9 +85,9 @@ export default function MainWeatherCard({ data, unit, theme }) {
           <motion.div
             animate={{ y: [0, -10, 0] }}
             transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-            style={{ fontSize: 56, filter: `drop-shadow(0 0 20px ${accent}60)` }}
+            style={{ filter: `drop-shadow(0 0 20px ${accent}60)` }}
           >
-            {icon}
+            <WeatherIcon iconKey={iconKey} size={56} />
           </motion.div>
         </div>
       </div>
@@ -150,7 +153,9 @@ export default function MainWeatherCard({ data, unit, theme }) {
             }}
             whileHover={{ background: 'rgba(255,255,255,0.15)', y: -4, borderColor: 'rgba(255,255,255,0.2)' }}
           >
-            <div style={{ fontSize: 24, marginBottom: 12, filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.2))' }}>{s.icon}</div>
+            <div style={{ marginBottom: 12, color: accent, filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.2))' }}>
+              <s.icon size={22} strokeWidth={1.75} />
+            </div>
             <div style={{ fontFamily: "'Outfit', sans-serif", fontSize: 22, fontWeight: 800, color: '#fff', lineHeight: 1 }}>
               {s.value}
             </div>

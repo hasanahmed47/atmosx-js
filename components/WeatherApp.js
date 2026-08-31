@@ -2,6 +2,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import dynamic from 'next/dynamic'
 import { motion, AnimatePresence } from 'framer-motion'
+import { Zap, AlertTriangle } from 'lucide-react'
 import { useWeather } from '@/hooks/useWeather'
 import { getWeatherTheme } from '@/lib/weather'
 import WeatherBackground from '@/components/ui/WeatherBackground'
@@ -12,14 +13,12 @@ import LocationMap from '@/components/ui/LocationMap'
 import WeatherSound from '@/components/ui/WeatherSound'
 import { WEATHER_MAP } from '@/lib/weather'
 
-// Lazy load heavy components
 const MainWeatherCard = dynamic(() => import('@/components/weather/MainWeatherCard'))
 const HourlyForecast  = dynamic(() => import('@/components/weather/HourlyForecast'))
 const DailyForecast   = dynamic(() => import('@/components/weather/DailyForecast'))
 const AirQuality      = dynamic(() => import('@/components/weather/AirQuality'))
 const SunUV           = dynamic(() => import('@/components/weather/SunUV'))
 
-// Skeleton
 function Skeleton({ h = 120 }) {
   return <div className="skeleton" style={{ height: h, borderRadius: 20, marginBottom: 14 }} />
 }
@@ -70,7 +69,6 @@ export default function WeatherApp() {
         padding: '20px 16px 60px',
         display: showLoading ? 'none' : 'block',
       }}>
-        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -81,8 +79,10 @@ export default function WeatherApp() {
               width: 40, height: 40, borderRadius: 12,
               background: `linear-gradient(135deg, ${theme.accent}, ${theme.accent}88)`,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 20, boxShadow: `0 0 20px ${theme.accent}40`,
-            }}>⚡</div>
+              boxShadow: `0 0 20px ${theme.accent}40`,
+            }}>
+              <Zap size={20} color="#fff" strokeWidth={2} />
+            </div>
             <div>
               <div style={{ fontFamily: "'Outfit', sans-serif", fontSize: 22, fontWeight: 800, letterSpacing: -0.5, color: '#fff' }}>
                 Atmos<span style={{ color: theme.accent }}>X</span>
@@ -93,7 +93,6 @@ export default function WeatherApp() {
             </div>
           </div>
 
-          {/* Unit Toggle */}
           <div style={{
             display: 'flex', background: 'rgba(255,255,255,0.08)',
             backdropFilter: 'blur(12px)',
@@ -113,14 +112,12 @@ export default function WeatherApp() {
           </div>
         </motion.div>
 
-        {/* Search */}
         <SearchBar
           onCitySelect={handleCoords}
           onGeoClick={handleGeo}
           loading={status === 'loading'}
         />
 
-        {/* Demo Banner */}
         <AnimatePresence>
           {isMock && (
             <motion.div
@@ -136,7 +133,7 @@ export default function WeatherApp() {
                 backdropFilter: 'blur(12px)',
               }}
             >
-              <span style={{ fontSize: 16 }}>⚠️</span>
+              <AlertTriangle size={16} />
               <span>
                 <strong>OFFLINE MODE</strong> — API key activates in ~2 hours. Showing Karachi sample data.
               </span>
@@ -144,7 +141,6 @@ export default function WeatherApp() {
           )}
         </AnimatePresence>
 
-        {/* Skeleton while loading */}
         {status === 'loading' && !data && (
           <div>
             <Skeleton h={340} />
@@ -154,7 +150,6 @@ export default function WeatherApp() {
           </div>
         )}
 
-        {/* Weather Content */}
         <AnimatePresence>
           {data && (
             <motion.div key="content" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
@@ -164,7 +159,6 @@ export default function WeatherApp() {
               <AirQuality data={data.air} />
               <SunUV data={data.current} accent={theme.accent} />
 
-              {/* Location Card */}
               <LocationMap
                 lat={data.lat}
                 lon={data.lon}

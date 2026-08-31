@@ -1,9 +1,11 @@
 'use client'
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { Search, Loader2, X, MapPin } from 'lucide-react'
 import { useDebounce } from '@/hooks/useDebounce'
 import { useThrottle } from '@/hooks/useThrottle'
-import { searchCities, getFlagEmoji } from '@/lib/weather'
+import { searchCities } from '@/lib/weather'
+import CountryFlag from '@/components/icons/CountryFlag'
 import styles from './SearchBar.module.css'
 
 export default function SearchBar({ onCitySelect, onGeoClick, loading }) {
@@ -53,7 +55,7 @@ export default function SearchBar({ onCitySelect, onGeoClick, loading }) {
     <div ref={wrapRef} className={styles.wrap}>
       <div className={styles.inputRow}>
         <span className={`${styles.iconLeft} ${focused ? styles.iconLeftFocused : ''}`}>
-          {fetching ? '⏳' : '🔍'}
+          {fetching ? <Loader2 size={16} /> : <Search size={16} />}
         </span>
 
         <input
@@ -76,7 +78,7 @@ export default function SearchBar({ onCitySelect, onGeoClick, loading }) {
                 exit={{ opacity: 0, scale: 0.7 }}
                 onClick={() => { setQuery(''); setSuggestions([]); setOpen(false) }}
                 className={styles.clearBtn}
-              >✕</motion.button>
+              ><X size={14} /></motion.button>
             ) : (
               <motion.button key="geo"
                 initial={{ opacity: 0, scale: 0.7 }}
@@ -85,7 +87,7 @@ export default function SearchBar({ onCitySelect, onGeoClick, loading }) {
                 onClick={onGeoClick}
                 title="Use my location"
                 className={styles.geoBtn}
-              >📍</motion.button>
+              ><MapPin size={16} /></motion.button>
             )}
           </AnimatePresence>
         </div>
@@ -108,7 +110,7 @@ export default function SearchBar({ onCitySelect, onGeoClick, loading }) {
                 onMouseDown={() => handleSelect(city)} // onMouseDown instead of onClick to fire before onBlur
                 className={styles.suggestionItem}
               >
-                <span className={styles.flag}>{getFlagEmoji(city.country)}</span>
+                <CountryFlag code={city.country} size={22} />
                 <div>
                   <div className={styles.cityName}>{city.name}{city.state ? `, ${city.state}` : ''}</div>
                   <div className={styles.countryName}>{city.country}</div>

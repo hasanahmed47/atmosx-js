@@ -1,5 +1,6 @@
 'use client'
 import { motion, AnimatePresence } from 'framer-motion'
+import { Zap } from 'lucide-react'
 
 export default function LoadingScreen({ visible, text, progress }) {
   return (
@@ -17,7 +18,6 @@ export default function LoadingScreen({ visible, text, progress }) {
             alignItems: 'center', justifyContent: 'center', gap: 28,
           }}
         >
-          {/* Rings */}
           <div style={{ position: 'relative', width: 120, height: 120, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             {[0,1,2].map(i => (
               <motion.div key={i}
@@ -35,18 +35,16 @@ export default function LoadingScreen({ visible, text, progress }) {
             <motion.div
               animate={{ scale: [1, 1.1, 1] }}
               transition={{ duration: 2, repeat: Infinity }}
-              style={{ fontSize: 40, filter: 'drop-shadow(0 0 16px rgba(96,165,250,0.8))' }}
+              style={{ filter: 'drop-shadow(0 0 16px rgba(96,165,250,0.8))' }}
             >
-              ⚡
+              <Zap size={40} color="#60a5fa" strokeWidth={1.75} />
             </motion.div>
           </div>
 
-          {/* Logo */}
           <div style={{ fontFamily: "'Outfit', sans-serif", fontSize: 30, fontWeight: 900, letterSpacing: -1, color: '#fff' }}>
             Atmos<span style={{ color: '#60a5fa' }}>X</span>
           </div>
 
-          {/* Progress */}
           <div style={{ width: 200, height: 3, background: 'rgba(255,255,255,0.1)', borderRadius: 2, overflow: 'hidden' }}>
             <motion.div
               animate={{ width: `${progress}%` }}
