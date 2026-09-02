@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useState, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
 import dynamic from 'next/dynamic'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Zap, AlertTriangle } from 'lucide-react'
@@ -11,7 +12,7 @@ import Toast from '@/components/ui/Toast'
 import SearchBar from '@/components/weather/SearchBar'
 import LocationMap from '@/components/ui/LocationMap'
 import WeatherSound from '@/components/ui/WeatherSound'
-import { WEATHER_MAP } from '@/lib/weather'
+import { WEATHER_MAP, searchCities } from '@/lib/weather'
 
 const MainWeatherCard = dynamic(() => import('@/components/weather/MainWeatherCard'))
 const HourlyForecast  = dynamic(() => import('@/components/weather/HourlyForecast'))
@@ -28,6 +29,7 @@ export default function WeatherApp() {
   const [toast, setToast] = useState(null)
   const [showLoading, setShowLoading] = useState(true)
   const { data, status, isMock, loadingText, loadingProgress, fetchWeather } = useWeather()
+  const router = useRouter()
 
   const theme = data
     ? getWeatherTheme(data.current.weather[0].id, data.current.dt > data.current.sys.sunrise && data.current.dt < data.current.sys.sunset)
@@ -35,10 +37,15 @@ export default function WeatherApp() {
 
   const showToast = (msg, type = 'info') => setToast({ msg, type })
 
-  const handleCoords = useCallback(async (lat, lon) => {
+  const handleCoords = useCallback(async (lat, lon, name = null) => {
     await fetchWeather(lat, lon)
     setShowLoading(false)
-  }, [fetchWeather])
+    if (name) {
+      router.replace(`?city=${encodeURIComponent(name)}`, { scroll: false })
+    } else {
+      router.replace(`?lat=${lat}&lon=${lon}`, { scroll: false })
+    }
+  }, [fetchWeather, router])
 
   const handleGeo = useCallback(() => {
     if (!navigator.geolocation) {
@@ -56,7 +63,32 @@ export default function WeatherApp() {
     )
   }, [handleCoords, fetchWeather])
 
-  useEffect(() => { handleGeo() }, []) // eslint-disable-line
+  useEffect(() => {
+    const initApp = async () => {
+      const searchParams = new URLSearchParams(window.location.search)
+      const lat = searchParams.get('lat')
+      const lon = searchParams.get('lon')
+      const city = searchParams.get('city')
+
+      if (lat && lon) {
+        await handleCoords(parseFloat(lat), parseFloat(lon))
+      } else if (city) {
+        try {
+          const results = await searchCities(city)
+          if (results && results.length > 0) {
+            await handleCoords(results[0].lat, results[0].lon, results[0].name)
+          } else {
+            handleGeo()
+          }
+        } catch {
+          handleGeo()
+        }
+      } else {
+        handleGeo()
+      }
+    }
+    initApp()
+  }, []) // eslint-disable-line
 
   return (
     <>

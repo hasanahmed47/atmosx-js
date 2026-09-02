@@ -17,7 +17,16 @@ export default function SearchBar({ onCitySelect, onGeoClick, loading }) {
   const wrapRef    = useRef(null)
   const skipSearch = useRef(false) // ← prevents re-search after city select
 
+  const [recentSearches, setRecentSearches] = useState([])
+
   const debouncedQuery = useDebounce(query, 400)
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('atmosx_recent')
+      if (saved) setRecentSearches(JSON.parse(saved))
+    } catch (e) {}
+  }, [])
 
   const doSearch = useCallback(async (q) => {
     if (skipSearch.current) { skipSearch.current = false; return }
@@ -48,6 +57,11 @@ export default function SearchBar({ onCitySelect, onGeoClick, loading }) {
     setQuery(city.name)
     setOpen(false)
     setSuggestions([])
+    
+    const newRecent = [city, ...recentSearches.filter(c => c.name !== city.name || c.country !== city.country)].slice(0, 5)
+    setRecentSearches(newRecent)
+    try { localStorage.setItem('atmosx_recent', JSON.stringify(newRecent)) } catch (e) {}
+
     onCitySelect(city.lat, city.lon, city.name)
   }
 
@@ -94,7 +108,7 @@ export default function SearchBar({ onCitySelect, onGeoClick, loading }) {
       </div>
 
       <AnimatePresence>
-        {open && suggestions.length > 0 && (
+        {open && suggestions.length > 0 ? (
           <motion.div
             initial={{ opacity: 0, y: -8, scaleY: 0.92 }}
             animate={{ opacity: 1, y: 0, scaleY: 1 }}
@@ -118,7 +132,36 @@ export default function SearchBar({ onCitySelect, onGeoClick, loading }) {
               </motion.div>
             ))}
           </motion.div>
-        )}
+        ) : (focused && !query && recentSearches.length > 0) ? (
+          <motion.div
+            initial={{ opacity: 0, y: -8, scaleY: 0.92 }}
+            animate={{ opacity: 1, y: 0, scaleY: 1 }}
+            exit={{ opacity: 0, y: -8, scaleY: 0.92 }}
+            transition={{ duration: 0.18 }}
+            className={styles.dropdown}
+            style={{ padding: '12px' }}
+          >
+            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', marginBottom: 8, paddingLeft: 4, fontWeight: 600 }}>RECENT SEARCHES</div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+              {recentSearches.map((city) => (
+                <button
+                  key={`recent-${city.lat}-${city.lon}`}
+                  onMouseDown={(e) => { e.preventDefault(); handleSelect(city); }}
+                  style={{
+                    background: 'rgba(255,255,255,0.08)',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    borderRadius: 16, padding: '6px 12px',
+                    display: 'flex', alignItems: 'center', gap: 6,
+                    color: '#fff', fontSize: 13, cursor: 'pointer',
+                    outline: 'none'
+                  }}
+                >
+                  <CountryFlag code={city.country} size={16} /> {city.name}
+                </button>
+              ))}
+            </div>
+          </motion.div>
+        ) : null}
       </AnimatePresence>
     </div>
   )
