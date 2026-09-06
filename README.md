@@ -26,7 +26,7 @@ Open → http://localhost:3000
 
 ---
 
-## 🔐 API Key Security
+##  API Key Security
 The key uses `OWM_KEY` (no `NEXT_PUBLIC_` prefix).
 This means it **only exists on the server** — never sent to the browser.
 All weather API calls go through `/api/weather` route internally.
