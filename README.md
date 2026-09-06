@@ -1,4 +1,4 @@
-# AtmosX Weather App ⚡
+# AtmosX Weather App 
 > Dynamic weather with live atmospheric effects — rain, clouds, snow, sun animations
 
 ---
