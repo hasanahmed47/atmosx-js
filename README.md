@@ -3,7 +3,7 @@
 
 ---
 
-## 🚀 Local Setup
+##  Local Setup
 
 ### 1. Install
 ```bash
