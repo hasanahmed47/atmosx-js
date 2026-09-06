@@ -61,7 +61,7 @@ git push -u origin main
 4. Click **Save**
 5. Go to **Deployments → Redeploy**
 
-✅ Your app is live at `https://your-project.vercel.app`
+ Your app is live at `https://your-project.vercel.app`
 
 ---
 
